@@ -27,7 +27,7 @@ function App() {
     <encodingDesc>
       <appInfo>
         <application ident="TEI_Editor" version="1.0" when="2024-11-26">
-          <desc>Documento creato con l'editor TEI UniMC</desc>
+          <desc>Documento creato con Giuliosus 0.1, l'editor TEI dell'Università di Macerata</desc>
         </application>
       </appInfo>
     </encodingDesc>
@@ -205,15 +205,15 @@ function App() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <img 
-            src="/api/placeholder/64/64" 
+            src="/assets/unimc.png" 
             alt="Logo UniMC" 
             style={{ height: '4rem' }}
           />
           <div>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-              Università di Macerata
+              Giuliosus 0.1
             </h1>
-            <p style={{ fontSize: '0.875rem' }}>Dipartimento di Studi Umanistici</p>
+            <p style={{ fontSize: '0.875rem' }}>Università di Macerata - Dipartimento di Studi Umanistici</p>
             <p style={{ fontSize: '0.875rem' }}>Prof. Fabio Curzi</p>
             <p style={{ fontSize: '0.875rem' }}>Corso di Abilità informatiche e telematiche</p>
           </div>
@@ -231,7 +231,7 @@ function App() {
           background: '#f9fafb'
         }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
-            Editor XML-TEI UniMC
+            Editor XML-TEI per attività didattica
           </h2>
         </div>
 
