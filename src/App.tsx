@@ -1,10 +1,16 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { Button } from './components/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from './components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Check, Code, FileText, Undo, Redo, Download } from 'lucide-react';
 
+interface ValidationMessage {
+  type: 'error' | 'success' | 'warning';
+  message: string;
+}
+
 function App() {
-  const [xmlContent, setXmlContent] = useState(`<?xml version="1.0" encoding="UTF-8"?>
+  const [xmlContent, setXmlContent] = useState<string>(`<?xml version="1.0" encoding="UTF-8"?>
 <TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="it">
   <teiHeader>
     <fileDesc>
@@ -37,12 +43,13 @@ function App() {
     </body>
   </text>
 </TEI>`);
-  const [validationMessages, setValidationMessages] = useState([]);
-  const historyRef = useRef([xmlContent]);
-  const currentIndexRef = useRef(0);
-  const textareaRef = useRef(null);
 
-  const addToHistory = useCallback((content) => {
+  const [validationMessages, setValidationMessages] = useState<ValidationMessage[]>([]);
+  const historyRef = useRef<string[]>([xmlContent]);
+  const currentIndexRef = useRef<number>(0);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const addToHistory = useCallback((content: string) => {
     const newHistory = [
       ...historyRef.current.slice(0, currentIndexRef.current + 1),
       content
@@ -87,7 +94,7 @@ function App() {
     } catch (e) {
       setValidationMessages([{
         type: 'error',
-        message: `Errore di parsing XML: ${e.message}`
+        message: `Errore di parsing XML: ${e instanceof Error ? e.message : 'Errore sconosciuto'}`
       }]);
       return false;
     }
@@ -97,17 +104,16 @@ function App() {
     try {
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(xmlContent, "text/xml");
+      const messages: ValidationMessage[] = [];
       
-      const messages = [];
       const tei = xmlDoc.documentElement;
-
-      // Validazioni di base TEI
       if (!tei || tei.tagName !== 'TEI') {
         messages.push({
           type: 'error',
           message: 'L\'elemento radice deve essere <TEI>'
         });
-        return setValidationMessages(messages);
+        setValidationMessages(messages);
+        return;
       }
 
       if (tei.namespaceURI !== 'http://www.tei-c.org/ns/1.0') {
@@ -117,60 +123,13 @@ function App() {
         });
       }
 
-      // Validazione elementi obbligatori
       const teiHeader = tei.getElementsByTagName('teiHeader')[0];
       const text = tei.getElementsByTagName('text')[0];
 
-      if (!teiHeader) {
+      if (!teiHeader || !text) {
         messages.push({
           type: 'error',
-          message: 'Elemento <teiHeader> mancante'
-        });
-      }
-
-      if (!text) {
-        messages.push({
-          type: 'error',
-          message: 'Elemento <text> mancante'
-        });
-      }
-
-      // Validazione teiHeader
-      if (teiHeader) {
-        const fileDesc = teiHeader.getElementsByTagName('fileDesc')[0];
-        if (!fileDesc) {
-          messages.push({
-            type: 'error',
-            message: 'Elemento <fileDesc> mancante in teiHeader'
-          });
-        } else {
-          // Validazione elementi obbligatori in fileDesc
-          const requiredInFileDesc = ['titleStmt', 'publicationStmt', 'sourceDesc'];
-          requiredInFileDesc.forEach(elem => {
-            if (!fileDesc.getElementsByTagName(elem)[0]) {
-              messages.push({
-                type: 'error',
-                message: `Elemento <${elem}> mancante in fileDesc`
-              });
-            }
-          });
-
-          // Validazione titleStmt
-          const titleStmt = fileDesc.getElementsByTagName('titleStmt')[0];
-          if (titleStmt && !titleStmt.getElementsByTagName('title')[0]) {
-            messages.push({
-              type: 'error',
-              message: 'Elemento <title> mancante in titleStmt'
-            });
-          }
-        }
-      }
-
-      // Validazione struttura text
-      if (text && !text.getElementsByTagName('body')[0]) {
-        messages.push({
-          type: 'error',
-          message: 'Elemento <body> mancante in text'
+          message: 'Elementi obbligatori mancanti (teiHeader o text)'
         });
       }
 
@@ -185,7 +144,7 @@ function App() {
     } catch (e) {
       setValidationMessages([{
         type: 'error',
-        message: `Errore durante la validazione TEI: ${e.message}`
+        message: `Errore durante la validazione TEI: ${e instanceof Error ? e.message : 'Errore sconosciuto'}`
       }]);
     }
   }, [xmlContent]);
@@ -202,9 +161,7 @@ function App() {
       const serializer = new XMLSerializer();
       const formatted = serializer.serializeToString(xmlDoc)
         .replace(/(>)(<)(\/*)/g, '$1\n$2$3')
-        .replace(/<(.*?)>/g, function(match) {
-          return match.replace(/\s+/g, ' ');
-        })
+        .replace(/<(.*?)>/g, (match) => match.replace(/\s+/g, ' '))
         .split('\n')
         .map(line => line.trim())
         .join('\n');
@@ -219,7 +176,7 @@ function App() {
     } catch (e) {
       setValidationMessages([{
         type: 'error',
-        message: e.message
+        message: e instanceof Error ? e.message : 'Errore sconosciuto'
       }]);
     }
   }, [xmlContent, addToHistory]);
@@ -236,7 +193,7 @@ function App() {
     document.body.removeChild(a);
   }, [xmlContent]);
 
-  const handleContentChange = useCallback((e) => {
+  const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newContent = e.target.value;
     setXmlContent(newContent);
     addToHistory(newContent);
@@ -247,8 +204,8 @@ function App() {
       <div className="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
         <div className="flex items-center gap-4">
           <img 
-            src="assets/unimc.png" 
-            alt="Logo Università di Macerata" 
+            src="/api/placeholder/64/64"
+            alt="Logo UniMC" 
             className="h-16"
           />
           <div className="space-y-1">
@@ -260,7 +217,7 @@ function App() {
         </div>
       </div>
 
-      <Card className="w-full">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="w-6 h-6" />
@@ -306,21 +263,14 @@ function App() {
 
             <div className="space-y-2">
               {validationMessages.map((msg, i) => (
-                <div
-                  key={i}
-                  className={`flex items-center gap-2 p-2 rounded ${
-                    msg.type === 'error' ? 'bg-red-100 text-red-800' : 
-                    msg.type === 'warning' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-green-100 text-green-800'
-                  }`}
-                >
+                <Alert key={i} variant={msg.type === 'error' ? 'destructive' : 'default'}>
                   {msg.type === 'error' ? (
                     <AlertCircle className="w-4 h-4" />
                   ) : (
                     <Check className="w-4 h-4" />
                   )}
-                  {msg.message}
-                </div>
+                  <AlertDescription>{msg.message}</AlertDescription>
+                </Alert>
               ))}
             </div>
           </div>
