@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Button } from './components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from './components/ui/card';
 import { AlertCircle, Check, Code, FileText, Undo, Redo, Download } from 'lucide-react';
 
 function App() {
@@ -330,4 +330,4 @@ function App() {
   );
 }
 
-export default TEIEditor;
+export default App;
