@@ -1,8 +1,4 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Check, Code, FileText, Undo, Redo, Download } from 'lucide-react';
 
 interface ValidationMessage {
   type: 'error' | 'success' | 'warning';
@@ -200,82 +196,164 @@ function App() {
   }, [addToHistory]);
 
   return (
-    <div className="max-w-6xl mx-auto p-4 space-y-6">
-      <div className="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
-        <div className="flex items-center gap-4">
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '1rem' }}>
+      <div style={{ 
+        background: '#f3f4f6', 
+        padding: '1rem', 
+        borderRadius: '0.5rem',
+        marginBottom: '1rem'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <img 
-            src="/api/placeholder/64/64"
+            src="/api/placeholder/64/64" 
             alt="Logo UniMC" 
-            className="h-16"
+            style={{ height: '4rem' }}
           />
-          <div className="space-y-1">
-            <h1 className="text-xl font-bold">Università di Macerata</h1>
-            <p className="text-sm">Dipartimento di Studi Umanistici</p>
-            <p className="text-sm">Prof. Fabio Curzi</p>
-            <p className="text-sm">Corso di Abilità informatiche e telematiche</p>
+          <div>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+              Università di Macerata
+            </h1>
+            <p style={{ fontSize: '0.875rem' }}>Dipartimento di Studi Umanistici</p>
+            <p style={{ fontSize: '0.875rem' }}>Prof. Fabio Curzi</p>
+            <p style={{ fontSize: '0.875rem' }}>Corso di Abilità informatiche e telematiche</p>
           </div>
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="w-6 h-6" />
+      <div style={{ 
+        border: '1px solid #e5e7eb',
+        borderRadius: '0.5rem',
+        overflow: 'hidden'
+      }}>
+        <div style={{ 
+          padding: '1rem',
+          borderBottom: '1px solid #e5e7eb',
+          background: '#f9fafb'
+        }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
             Editor XML-TEI UniMC
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              <Button onClick={undo} disabled={currentIndexRef.current === 0}>
-                <Undo className="w-4 h-4 mr-2" />
-                Annulla
-              </Button>
-              <Button onClick={redo} disabled={currentIndexRef.current === historyRef.current.length - 1}>
-                <Redo className="w-4 h-4 mr-2" />
-                Ripeti
-              </Button>
-              <Button onClick={formatXML}>
-                <Code className="w-4 h-4 mr-2" />
-                Formatta
-              </Button>
-              <Button onClick={validateXMLSyntax} variant="secondary">
-                <AlertCircle className="w-4 h-4 mr-2" />
-                Valida XML
-              </Button>
-              <Button onClick={validateTEI}>
-                <Check className="w-4 h-4 mr-2" />
-                Valida TEI
-              </Button>
-              <Button onClick={downloadXML}>
-                <Download className="w-4 h-4 mr-2" />
-                Scarica XML
-              </Button>
-            </div>
-            
-            <textarea
-              ref={textareaRef}
-              value={xmlContent}
-              onChange={handleContentChange}
-              className="w-full h-96 font-mono text-sm p-4 border rounded-md"
-              spellCheck="false"
-            />
+          </h2>
+        </div>
 
-            <div className="space-y-2">
-              {validationMessages.map((msg, i) => (
-                <Alert key={i} variant={msg.type === 'error' ? 'destructive' : 'default'}>
-                  {msg.type === 'error' ? (
-                    <AlertCircle className="w-4 h-4" />
-                  ) : (
-                    <Check className="w-4 h-4" />
-                  )}
-                  <AlertDescription>{msg.message}</AlertDescription>
-                </Alert>
-              ))}
-            </div>
+        <div style={{ padding: '1rem' }}>
+          <div style={{ 
+            display: 'flex',
+            gap: '0.5rem',
+            flexWrap: 'wrap',
+            marginBottom: '1rem'
+          }}>
+            <button
+              onClick={undo}
+              disabled={currentIndexRef.current === 0}
+              style={{
+                padding: '0.5rem 1rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.375rem',
+                background: '#ffffff',
+                cursor: 'pointer',
+                opacity: currentIndexRef.current === 0 ? '0.5' : '1'
+              }}
+            >
+              Annulla
+            </button>
+            <button
+              onClick={redo}
+              disabled={currentIndexRef.current === historyRef.current.length - 1}
+              style={{
+                padding: '0.5rem 1rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.375rem',
+                background: '#ffffff',
+                cursor: 'pointer',
+                opacity: currentIndexRef.current === historyRef.current.length - 1 ? '0.5' : '1'
+              }}
+            >
+              Ripeti
+            </button>
+            <button
+              onClick={formatXML}
+              style={{
+                padding: '0.5rem 1rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.375rem',
+                background: '#ffffff',
+                cursor: 'pointer'
+              }}
+            >
+              Formatta
+            </button>
+            <button
+              onClick={validateXMLSyntax}
+              style={{
+                padding: '0.5rem 1rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.375rem',
+                background: '#f3f4f6',
+                cursor: 'pointer'
+              }}
+            >
+              Valida XML
+            </button>
+            <button
+              onClick={validateTEI}
+              style={{
+                padding: '0.5rem 1rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.375rem',
+                background: '#ffffff',
+                cursor: 'pointer'
+              }}
+            >
+              Valida TEI
+            </button>
+            <button
+              onClick={downloadXML}
+              style={{
+                padding: '0.5rem 1rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.375rem',
+                background: '#ffffff',
+                cursor: 'pointer'
+              }}
+            >
+              Scarica XML
+            </button>
           </div>
-        </CardContent>
-      </Card>
+          
+          <textarea
+            ref={textareaRef}
+            value={xmlContent}
+            onChange={handleContentChange}
+            style={{
+              width: '100%',
+              height: '24rem',
+              padding: '1rem',
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+              border: '1px solid #d1d5db',
+              borderRadius: '0.375rem',
+              marginBottom: '1rem'
+            }}
+            spellCheck="false"
+          />
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {validationMessages.map((msg, i) => (
+              <div
+                key={i}
+                style={{
+                  padding: '0.75rem',
+                  borderRadius: '0.375rem',
+                  background: msg.type === 'error' ? '#fee2e2' : '#dcfce7',
+                  color: msg.type === 'error' ? '#991b1b' : '#166534'
+                }}
+              >
+                {msg.message}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
